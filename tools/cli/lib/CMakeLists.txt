@@ -26,6 +26,7 @@ add_library(${LIB_TDNF_CLI} SHARED
     parserepoqueryargs.c
     parsereposyncargs.c
     parseupdateinfo.c
+    sizeestimate.c
     updateinfocmd.c
 )
 

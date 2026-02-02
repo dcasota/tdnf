@@ -237,6 +237,12 @@ TDNFCliRepoQueryCommand(
     );
 
 uint32_t
+TDNFCliSizeEstimateCommand(
+    PTDNF_CLI_CONTEXT pContext,
+    PTDNF_CMD_ARGS pCmdArgs
+    );
+
+uint32_t
 TDNFCliUpdateInfoCommand(
     PTDNF_CLI_CONTEXT pContext,
     PTDNF_CMD_ARGS pCmdArgs

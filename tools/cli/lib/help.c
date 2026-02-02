@@ -398,6 +398,13 @@ static const char *help_msg =
  "search <term>              Search package details for the given string\n"
  "                           Example: tdnf search bash\n"
 
+ "size-estimate <pkgs>       Estimate compressed tarball size for Photon Docker image\n"
+ "                           Default output: estimated .tar.gz size in bytes (for scripts)\n"
+ "                           Example: tdnf size-estimate bash coreutils glibc\n"
+ "                           Example: tdnf -v size-estimate bash glibc  (verbose output)\n"
+ "                           Options: --setopt=buffer-percent=N  (default 2)\n"
+ "                                    --setopt=comp-ratio=N      (default 0.44)\n"
+
  "update <pkg>               Upgrade a package or packages on your system (same as 'upgrade')\n"
  "                           Example: tdnf update package\n"
 

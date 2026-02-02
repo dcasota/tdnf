@@ -35,6 +35,7 @@ static TDNF_CLI_CMD_MAP arCmdMap[] =
     {"reposync",           TDNFCliRepoSyncCommand, false},
     {"repoquery",          TDNFCliRepoQueryCommand, false},
     {"search",             TDNFCliSearchCommand, false},
+    {"size-estimate",      TDNFCliSizeEstimateCommand, false},
     {"update",             TDNFCliUpgradeCommand, true},
     {"update-to",          TDNFCliUpgradeCommand, true},
     {"upgrade",            TDNFCliUpgradeCommand, true},
