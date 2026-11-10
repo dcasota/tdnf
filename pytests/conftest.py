@@ -43,6 +43,11 @@ def TestRepoServer(root, port=8080, interface='', enable_https=False):
             tmp = crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
             f.write(tmp.decode('utf-8'))
 
+    def dump_key(fn, key):
+        with open(fn, 'wt') as f:
+            tmp = crypto.dump_privatekey(crypto.FILETYPE_PEM, key)
+            f.write(tmp.decode('utf-8'))
+
     os.chdir(root)
 
     if enable_https:
@@ -64,15 +69,18 @@ def TestRepoServer(root, port=8080, interface='', enable_https=False):
         cert.sign(k, 'sha512')
 
         keyfile = os.path.join(os.getcwd(), 'key.pem')
-        dump_cert(keyfile, cert)
+        dump_key(keyfile, k)
 
         certfile = os.path.join(os.getcwd(), 'cert.pem')
-        dump_cert(keyfile, k)
+        dump_cert(certfile, cert)
 
     httpd = HTTPServer(addr, SimpleHTTPRequestHandler)
     if enable_https:
-        httpd.socket = ssl.wrap_socket(httpd.socket, keyfile=keyfile,
-                                       certfile=certfile, server_side=True)
+        # ssl.wrap_socket() was removed in Python 3.12
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+        ctx.load_cert_chain(certfile=certfile, keyfile=keyfile)
+        httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True)
     httpd.serve_forever()
 
 
@@ -259,7 +267,7 @@ class TestUtils(object):
                 port = 443
             try:
                 pem = ssl.get_server_certificate((u.netloc, port))
-                cert = ssl.load_certificate(crypto.FILETYPE_PEM, pem)
+                cert = crypto.load_certificate(crypto.FILETYPE_PEM, pem)
                 fp = cert.digest('sha1').decode()
             except Exception:
                 return False, 'Failed to get server certificate'

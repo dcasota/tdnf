@@ -280,14 +280,17 @@ TDNFJoinArrayToString(
 
     for(i = 0; i < count && ppszArray[i]; i++)
     {
-        strcpy(&pszResult[p], ppszArray[i]);
-        p += strlen(ppszArray[i]);
+        int nLen = strlen(ppszArray[i]);
+
+        memcpy(&pszResult[p], ppszArray[i], nLen);
+        p += nLen;
         if (i < count-1 && ppszArray[i+1])
         {
-            strcpy(&pszResult[p], pszSep);
+            memcpy(&pszResult[p], pszSep, nSepSize);
             p += nSepSize;
         }
     }
+    pszResult[p] = '\0';
 
     *ppszResult = pszResult;
 cleanup:
@@ -348,18 +351,20 @@ TDNFJoinArrayToStringSorted(
 
         for (i = 0; ppszLines[i]; i++)
         {
-            if (i == 0)
+            if (i == 0 || strcmp(ppszLines[i], ppszLines[i-1]))
             {
-                 strcpy(&pszResult[p], ppszLines[i]);
-                 p += strlen(ppszLines[i]);
-            } else if (strcmp(ppszLines[i], ppszLines[i-1]))
-            {
-                 strcpy(&pszResult[p], pszSep);
-                 p += nSepSize;
-                 strcpy(&pszResult[p], ppszLines[i]);
-                 p += strlen(ppszLines[i]);
+                 int nLen = strlen(ppszLines[i]);
+
+                 if (i > 0)
+                 {
+                     memcpy(&pszResult[p], pszSep, nSepSize);
+                     p += nSepSize;
+                 }
+                 memcpy(&pszResult[p], ppszLines[i], nLen);
+                 p += nLen;
             }
         }
+        pszResult[p] = '\0';
     }
 
     if (pszResult) {

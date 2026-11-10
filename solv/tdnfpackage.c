@@ -1809,7 +1809,8 @@ check_for_providers(
     PSolvSack pSack,
     SolverRuleinfo type,
     const char *pszProblem,
-    char *prv_pkgname
+    char *prv_pkgname,
+    size_t prv_pkgname_size
     )
 {
     char *beg;
@@ -1841,10 +1842,15 @@ check_for_providers(
         return ERROR_TDNF_SOLV_FAILED;
     }
 
-    for (int32_t i = 0; end > beg; beg++)
+    for (size_t i = 0; end > beg; beg++)
     {
         if (*beg != ' ')
         {
+            if (i >= sizeof(pkgname) - 1)
+            {
+                pr_err("Package name too long while trying to resolve\n");
+                return ERROR_TDNF_SOLV_FAILED;
+            }
             pkgname[i++] = *beg;
         }
     }
@@ -1859,7 +1865,7 @@ check_for_providers(
     {
         SolvFreePackageList(pAvailablePkgList);
     }
-    strcpy(prv_pkgname, pkgname);
+    snprintf(prv_pkgname, prv_pkgname_size, "%s", pkgname);
 
     return dwError;
 }
@@ -1906,7 +1912,8 @@ SolvReportProblems(
         if (dwSkipProblem != SKIPPROBLEM_NONE &&
             type == SOLVER_RULE_PKG_REQUIRES)
         {
-            if (!check_for_providers(pSack, type, pszProblem, prv_pkgname))
+            if (!check_for_providers(pSack, type, pszProblem, prv_pkgname,
+                                     sizeof(prv_pkgname)))
             {
                 continue;
             }

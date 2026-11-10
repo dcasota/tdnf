@@ -35,6 +35,7 @@ struct cnfnode *parse_varsdirs(char *dirs[])
             char buf[256], path[258];
             char *p;
             int n;
+            size_t len;
             struct cnfnode *cn_var;
 
             p = dent->d_name;
@@ -63,13 +64,15 @@ struct cnfnode *parse_varsdirs(char *dirs[])
             }
             if (fgets(buf, sizeof(buf), fptr) == NULL) {
                 /* might be EOF which is fine */
-                if (errno)
+                if (ferror(fptr))
                     goto error;
+                buf[0] = 0;
             }
             /* strip trailing spaces and newlines */
-            p = buf + strlen(buf)-1;
-            while (p >= buf && isspace(*p)) p--;
-            p[1] = 0;
+            len = strlen(buf);
+            while (len > 0 && isspace((unsigned char)buf[len - 1]))
+                len--;
+            buf[len] = 0;
 
             cn_var = create_cnfnode(dent->d_name);
             cnfnode_setval(cn_var, buf);
